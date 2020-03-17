@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import Land from './Land/Land.js';
 import Flower from './Flower/Flower.js';
 import BasicLights from './Lights.js';
+import {setDragControls} from '../entry.js';
 
 function createTile() {
     // var geometry = new THREE.BoxGeometry( 1, 1, 1 );
@@ -94,6 +95,14 @@ export default class SeedScene extends THREE.Group {
      // const flower = new Flower();
     const lights = new BasicLights();
 
+    // setTimeout(
+    //   () => {
+    //     setDragControls(house);
+    //   }, 
+    //   1000
+    // );
+
+
     this.add(
       ...tiles,
       house,
@@ -105,4 +114,3 @@ export default class SeedScene extends THREE.Group {
     // this.rotation.y = timeStamp / 10000;
   }
 }
-

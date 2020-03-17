@@ -9,19 +9,13 @@
 
 import { WebGLRenderer, PerspectiveCamera, Scene, Vector3, Raycaster, Vector2 } from 'three';
 import { DragControls } from 'three/examples/jsm/controls/DragControls.js';
+
 import SeedScene from './objects/Scene.js';
 
 const scene = new Scene();
 const camera = new PerspectiveCamera();
 const renderer = new WebGLRenderer({antialias: true});
 const seedScene = new SeedScene();
-
-var mouse = new Vector2(), raycaster = new Raycaster();
-
-controls = new DragControls( [ ... objects ], camera, renderer.domElement );
-controls.addEventListener( 'drag', render );
-document.addEventListener( 'click', onClick, false );
-
 
 // scene
 scene.add(seedScene);
@@ -76,3 +70,63 @@ function onDocumentKeyDown(event) {
       theta = theta + 0.2;
     }
 };
+
+
+
+var mouse = new Vector2(), raycaster = new Raycaster();
+var enableSelection = false;
+
+export const setDragControls = (object) => {
+   controls = new DragControls( [ object ], camera, renderer.domElement );
+}
+      
+function onClick( event ) {
+  event.preventDefault();
+  if ( enableSelection === true ) {
+
+    var draggableObjects = controls.getObjects();
+    draggableObjects.length = 0;
+
+    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+    raycaster.setFromCamera( mouse, camera );
+
+    var intersections = raycaster.intersectObjects( objects, true );
+
+    if ( intersections.length > 0 ) {
+
+      var object = intersections[ 0 ].object;
+
+      if ( group.children.includes( object ) === true ) {
+        object.material.emissive.set( 0x000000 );
+        scene.attach( object );
+      } else {
+        object.material.emissive.set( 0xaaaaaa );
+        group.attach( object );
+      }
+      controls.transformGroup = true;
+      draggableObjects.push( group );
+
+    }
+
+    if ( group.children.length === 0 ) {
+
+      controls.transformGroup = false;
+      draggableObjects.push( ...objects );
+
+    }
+  }
+}
+
+function onKeyUp() {
+  enableSelection = false;
+}
+
+function onKeyDown( event ) {
+  enableSelection = ( event.keyCode === 16 ) ? true : false;
+}
+
+document.addEventListener( 'click', onClick, false );
+window.addEventListener( 'keydown', onKeyDown, false );
+window.addEventListener( 'keyup', onKeyUp, false );
