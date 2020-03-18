@@ -7,7 +7,7 @@
  * 
  */
 
-import { WebGLRenderer, PerspectiveCamera, Scene, Vector3, Raycaster, Vector2 } from 'three';
+import { WebGLRenderer, PerspectiveCamera, Scene, Vector3, Raycaster, Vector2, Plane } from 'three';
 import { DragControls } from 'three/examples/jsm/controls/DragControls.js';
 
 import SeedScene from './objects/Scene.js';
@@ -33,7 +33,7 @@ let theta = 0;
 // render loop
 const onAnimationFrameHandler = (timeStamp) => {
   camera.position.x = 9 * Math.cos( theta );
-  camera.position.y = 15;
+  camera.position.y = 10;
   camera.position.z = 9 * Math.sin( theta );
   camera.lookAt( scene.position );
 
@@ -71,62 +71,48 @@ function onDocumentKeyDown(event) {
     }
 };
 
+// const planeNormal = new THREE.Vector3(0, 0, 1);
+// const plane = new THREE.Plane(this.planeNormal, 0);
 
 
-var mouse = new Vector2(), raycaster = new Raycaster();
-var enableSelection = false;
-
+var controls = null;
 export const setDragControls = (object) => {
    controls = new DragControls( [ object ], camera, renderer.domElement );
-}
-      
-function onClick( event ) {
-  event.preventDefault();
-  if ( enableSelection === true ) {
 
-    var draggableObjects = controls.getObjects();
-    draggableObjects.length = 0;
+   controls.addEventListener('drag', (event) => {
+     event.object.position.y = 0; // should be same as intersection.z
+     event.object.position.x = intersection.x;
+     event.object.position.z = intersection.z;
+   });
 
-    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+   controls.addEventListener( 'dragstart', function ( event ) {
+    event.object.material.emissive.set( 0xaaaaaa );
+  
+  } );
+  
+  controls.addEventListener( 'dragend', function ( event ) {
 
-    raycaster.setFromCamera( mouse, camera );
-
-    var intersections = raycaster.intersectObjects( objects, true );
-
-    if ( intersections.length > 0 ) {
-
-      var object = intersections[ 0 ].object;
-
-      if ( group.children.includes( object ) === true ) {
-        object.material.emissive.set( 0x000000 );
-        scene.attach( object );
-      } else {
-        object.material.emissive.set( 0xaaaaaa );
-        group.attach( object );
-      }
-      controls.transformGroup = true;
-      draggableObjects.push( group );
-
-    }
-
-    if ( group.children.length === 0 ) {
-
-      controls.transformGroup = false;
-      draggableObjects.push( ...objects );
-
-    }
-  }
+    event.object.material.emissive.set( 0x000000 );  
+  } );
 }
 
-function onKeyUp() {
-  enableSelection = false;
-}
+var mouse = new Vector2();
+var raycaster = new Raycaster();
+var plane = new Plane( new Vector3( 0, 0, 1 ), 0 );
+var planeNormal = null;
+var intersection = new Vector3();
 
-function onKeyDown( event ) {
-  enableSelection = ( event.keyCode === 16 ) ? true : false;
-}
+window.addEventListener( 'mousemove', onMouseMove, false );
 
-document.addEventListener( 'click', onClick, false );
-window.addEventListener( 'keydown', onKeyDown, false );
-window.addEventListener( 'keyup', onKeyUp, false );
+function onMouseMove( event ) {
+
+	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+  mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1; 
+  
+
+  planeNormal = new Vector3(0, 1, 0);
+  plane = new Plane(planeNormal, 0);
+
+  raycaster.setFromCamera(mouse, camera);
+  raycaster.ray.intersectPlane(plane, intersection);
+ }
