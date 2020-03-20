@@ -163,8 +163,8 @@ function createCardStack(resource, number) {
   return group;
 }
 
+const cardOrder = ["wheat", "ore", "brick", "sheep", "wood", "dev_back" ]
 function createResourceCardStacks() {
-  const cardOrder = ["wheat", "ore", "brick", "sheep", "wood", "dev_back" ]
   const cards = [
     ...cardOrder.map(resource => createCardStack(resource, 10)),
     ...cardOrder.map(resource => createCardStack(resource, 9))
@@ -207,11 +207,17 @@ export default class SeedScene extends THREE.Group {
     
     const resourceCardStacks = createResourceCardStacks();
 
-    resourceCardStacks.children.forEach((c, i, all) => {
-      // c.position.x = (- size / 2) + (i * (size /( all.length - 1)));
-      c.position.z = (- size / 2) - 2;
-      rotateAboutPoint(c, boardCenter, boardCenterNormal, i * (Math.PI / 6), true);
-    });
+    resourceCardStacks.children.forEach(
+      (stack, i, all) => {
+        stack.children.forEach(
+          c => {
+            // c.position.x = (- size / 2) + (i * (size /( all.length - 1)));
+            c.position.z = (- size / 2) - 2;
+            rotateAboutPoint(c, boardCenter, boardCenterNormal, i * (Math.PI / 6), true);
+          }
+        )
+      }
+    );
  
      // const flower = new Flower();
     const lights = new BasicLights();
