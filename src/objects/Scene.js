@@ -237,7 +237,7 @@ export default class SeedScene extends THREE.Group {
       pieces,
       resourceCardStacks,
       lights,
-      gridHelper
+      // gridHelper
     );
   }
 

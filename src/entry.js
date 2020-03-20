@@ -76,14 +76,14 @@ function onDocumentKeyDown(event) {
     // q
     if (keyCode === 81) {
       if (!!selectedObject) {
-        selectedObject.rotateY(0.1);
+        selectedObject.rotateY(-0.1);
       }
     }
 
     // e
      if (keyCode === 69) {
       if (!!selectedObject) {
-        selectedObject.rotateY(-0.1);
+        selectedObject.rotateY(+0.1);
       }
     }
 };
@@ -94,7 +94,7 @@ export const setDragControls = (objects) => {
    controls = new DragControls( objects, camera, renderer.domElement );
 
    controls.addEventListener('drag', (event) => {
-     event.object.position.y = 0; // should be same as intersection.z
+     event.object.position.y = intersection.y; // should be same as intersection.z
      event.object.position.x = intersection.x;
      event.object.position.z = intersection.z;
    });
@@ -134,5 +134,21 @@ function onMouseMove( event ) {
   plane = new Plane(planeNormal, 0);
 
   raycaster.setFromCamera(mouse, camera);
-  raycaster.ray.intersectPlane(plane, intersection);
+  const intersectedObjects = raycaster.intersectObjects( scene.children, true );
+
+  let intersectedObject = null;
+  const [first, second] = intersectedObjects;
+  // ensure intersection isn't the selected object. Use the second intersection if it is.
+  if (first) {
+    intersectedObject =  
+    (!selectedObject || first.object.uuid !== selectedObject.uuid)
+      ? first 
+      : second;
+  }
+
+  if (!intersectedObject) {
+    raycaster.ray.intersectPlane(plane, intersection);
+  } else {
+    intersection = intersectedObject.point
+  }
  }
