@@ -59,25 +59,39 @@ document.body.appendChild( renderer.domElement );
 
 
 document.addEventListener("keydown", onDocumentKeyDown, false);
+ 
+const rotationIncrement = Math.PI / 12;
 function onDocumentKeyDown(event) {
     const keyCode = event.which;
     // left / 'a'
     if (keyCode === 37 || keyCode === 65) {
-      theta = theta - 0.2;
+      theta = theta + rotationIncrement;
     }
 
+    // d
     if (keyCode === 39 || keyCode === 68) {
-      theta = theta + 0.2;
+      theta = theta - rotationIncrement;
+    }
+
+    // q
+    if (keyCode === 81) {
+      if (!!selectedObject) {
+        selectedObject.rotateY(0.1);
+      }
+    }
+
+    // e
+     if (keyCode === 69) {
+      if (!!selectedObject) {
+        selectedObject.rotateY(-0.1);
+      }
     }
 };
 
-// const planeNormal = new THREE.Vector3(0, 0, 1);
-// const plane = new THREE.Plane(this.planeNormal, 0);
-
-
 var controls = null;
-export const setDragControls = (object) => {
-   controls = new DragControls( [ object ], camera, renderer.domElement );
+let selectedObject = null
+export const setDragControls = (objects) => {
+   controls = new DragControls( objects, camera, renderer.domElement );
 
    controls.addEventListener('drag', (event) => {
      event.object.position.y = 0; // should be same as intersection.z
@@ -86,13 +100,19 @@ export const setDragControls = (object) => {
    });
 
    controls.addEventListener( 'dragstart', function ( event ) {
-    event.object.material.emissive.set( 0xaaaaaa );
-  
+    if (event.object.material.emissive) {
+      event.object.material.emissive.set( 0xaaaaaa );
+    }
+    selectedObject = event.object;
   } );
   
   controls.addEventListener( 'dragend', function ( event ) {
 
-    event.object.material.emissive.set( 0x000000 );  
+    if (event.object.material.emissive) {
+      event.object.material.emissive.set( 0x000000 );  
+    }
+
+    selectedObject = null;
   } );
 }
 

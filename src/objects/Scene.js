@@ -1,8 +1,11 @@
 import * as THREE from 'three';
-import Land from './Land/Land.js';
-import Flower from './Flower/Flower.js';
-import BasicLights from './Lights.js';
+  import BasicLights from './Lights.js';
 import {setDragControls} from '../entry.js';
+import {createSettlement} from "./pieces/settlement";
+import {createTile} from "./pieces/tile";
+import {createRoad} from "./pieces/road";
+import {createCard} from "./pieces/card";
+import { Vector3, Vector2 } from 'three';
 
 function randomColor() {
   const color = new THREE.Color( 0xffffff );
@@ -10,170 +13,214 @@ function randomColor() {
   return color;
 }
 
-function createTile() {
-    // var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-
-    const width = 1.125
-    const height = 0.2
-    var geometry = new THREE.CylinderGeometry( width, width, height, 6 );
-    geometry.translate(0, -(height / 2 - 0.01), 0);
-
-    var material = new THREE.MeshStandardMaterial({color: randomColor()});
-    var tile = new THREE.Mesh( geometry, material );
-    return tile;
+/**
+ * Shuffles array in place. ES6 version
+ * @param {Array} a items An array containing the items.
+ */
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
-function createSettlement() {
-      var geometry = new THREE.Geometry();
-      const SIDE_HEIGHT = 7 * 2; // origin on y axis
-      const ROOF_ADD = 4 * 2;
+// obj - your object (THREE.Object3D or derived)
+// point - the point of rotation (THREE.Vector3)
+// axis - the axis of rotation (normalized THREE.Vector3)
+// theta - radian value of rotation
+// pointIsWorld - boolean indicating the point is in world coordinates (default = false)
+function rotateAboutPoint(obj, point, axis, theta, pointIsWorld){
+  pointIsWorld = (pointIsWorld === undefined)? false : pointIsWorld;
 
-    
-      const WIDTH = 10;
-      const LENGTH = 14;
+  if(pointIsWorld){
+      obj.parent.localToWorld(obj.position); // compensate for world coordinate
+  }
 
+  obj.position.sub(point); // remove the offset
+  obj.position.applyAxisAngle(axis, theta); // rotate the POSITION
+  obj.position.add(point); // re-add the offset
 
-      const ROOF_HEIGHT = ROOF_ADD + SIDE_HEIGHT; 
-      geometry.vertices.push(
-        new THREE.Vector3(-WIDTH, 0,  LENGTH),  // 0
-        new THREE.Vector3( WIDTH, 0,  LENGTH),  // 1
-        new THREE.Vector3(-WIDTH, SIDE_HEIGHT,  LENGTH),  // 2
-        new THREE.Vector3( WIDTH, SIDE_HEIGHT,  LENGTH),  // 3
-        new THREE.Vector3(-WIDTH, 0, -LENGTH),  // 4
-        new THREE.Vector3( WIDTH, 0, -LENGTH),  // 5
-        new THREE.Vector3(-WIDTH, SIDE_HEIGHT, -LENGTH),  // 6
-        new THREE.Vector3( WIDTH, SIDE_HEIGHT, -LENGTH),  // 7
-        new THREE.Vector3(0, ROOF_HEIGHT, -LENGTH), // 8
-        new THREE.Vector3(0, ROOF_HEIGHT, LENGTH) // 9
-      );
+  if(pointIsWorld){
+      obj.parent.worldToLocal(obj.position); // undo world coordinates compensation
+  }
 
-      geometry.faces.push(
-        // front
-        new THREE.Face3(0, 3, 2),
-        new THREE.Face3(0, 1, 3),
-        // right
-        new THREE.Face3(1, 7, 3),
-        new THREE.Face3(1, 5, 7),
-        // back
-        new THREE.Face3(5, 6, 7),
-        new THREE.Face3(5, 4, 6),
-        // left
-        new THREE.Face3(4, 2, 6),
-        new THREE.Face3(4, 0, 2),
-        // top
-        new THREE.Face3(2, 7, 6),
-        new THREE.Face3(2, 3, 7),
-        // bottom
-        new THREE.Face3(4, 1, 0),
-        new THREE.Face3(4, 5, 1),
-
-        // roof back
-        new THREE.Face3(8, 7, 6),
-
-        // roof front
-        new THREE.Face3(9, 2, 3 ),
-
-        // roof right 
-        new THREE.Face3(8, 3, 7),
-        new THREE.Face3(3, 8, 9),
-
-        // roof left
-        new THREE.Face3(6, 2, 8),
-        new THREE.Face3(2, 9, 8)
-      );
-            
-      geometry.computeFaceNormals();
-
-      const scale = 0.02
-      geometry.scale(scale, scale, scale)
-
-      var material = new THREE.MeshStandardMaterial({color: "orange"});
-      var tile = new THREE.Mesh( geometry, material );
-      return tile;
+  obj.rotateOnAxis(axis, theta); // rotate the OBJECT
 }
 
 function createTiles() {
   const tiles = [];
-    for (let i = 0; i < 20; i++) {
-      tiles.push(createTile())
+
+    for (let i = 0; i < 3; i++) {
+      tiles.push(createTile({resource: "brick", variant: i + 1}))
     }
 
+    for (let i = 0; i < 3; i++) {
+      tiles.push(createTile({resource: "ore", variant: i + 1}))
+    }
+
+    for (let i = 0; i < 4; i++) {
+      tiles.push(createTile({resource: "wheat", variant: i + 1}))
+    }
+
+    for (let i = 0; i < 4; i++) {
+      tiles.push(createTile({resource: "wood", variant: i + 1}))
+    }
+
+    for (let i = 0; i < 4; i++) {
+      tiles.push(createTile({resource: "sheep", variant: i + 1}))
+    }
+
+    for (let i = 0; i < 1; i++) {
+      tiles.push(createTile({resource: "desert", variant: i + 1}))
+    }
+
+    shuffle(tiles);
+
     tiles[1].position.x = 2;
-    tiles[2].position.x = 2;
-    tiles[3].position.x = -2;
-    tiles[4].position.x = 4;
-    tiles[5].position.x = -4;
+    tiles[2].position.x = -2;
+    tiles[3].position.x = 4;
+    tiles[4].position.x = -4;
 
     // 2nd from bottom
+    tiles[5].position.z = Math.sqrt(3);
+    tiles[5].position.x = 1;
+
     tiles[6].position.z = Math.sqrt(3);
-    tiles[6].position.x = 1;
+    tiles[6].position.x = 3;
 
     tiles[7].position.z = Math.sqrt(3);
-    tiles[7].position.x = 3;
+    tiles[7].position.x = -1;
 
     tiles[8].position.z = Math.sqrt(3);
-    tiles[8].position.x = -1;
-
-    tiles[9].position.z = Math.sqrt(3);
-    tiles[9].position.x = -3;
+    tiles[8].position.x = -3;
 
     // 2nd from top
+    tiles[9].position.z = -Math.sqrt(3);
+    tiles[9].position.x = 1;
+
     tiles[10].position.z = -Math.sqrt(3);
-    tiles[10].position.x = 1;
+    tiles[10].position.x = 3;
 
     tiles[11].position.z = -Math.sqrt(3);
-    tiles[11].position.x = 3;
+    tiles[11].position.x = -1;
 
     tiles[12].position.z = -Math.sqrt(3);
-    tiles[12].position.x = -1;
-
-    tiles[13].position.z = -Math.sqrt(3);
-    tiles[13].position.x = -3;
+    tiles[12].position.x = -3;
 
     // bottom 
+    tiles[13].position.z = Math.sqrt(3) * 2;
+    tiles[13].position.x = 0;
+
     tiles[14].position.z = Math.sqrt(3) * 2;
-    tiles[14].position.x = 0;
+    tiles[14].position.x = -2;
 
     tiles[15].position.z = Math.sqrt(3) * 2;
-    tiles[15].position.x = -2;
-
-    tiles[16].position.z = Math.sqrt(3) * 2;
-    tiles[16].position.x = 2;
+    tiles[15].position.x = 2;
 
     // Top
+    tiles[16].position.z = -Math.sqrt(3) * 2;
+    tiles[16].position.x = 0;
+
     tiles[17].position.z = -Math.sqrt(3) * 2;
-    tiles[17].position.x = 0;
+    tiles[17].position.x = -2;
 
     tiles[18].position.z = -Math.sqrt(3) * 2;
-    tiles[18].position.x = -2;
+    tiles[18].position.x = 2;
 
-    tiles[19].position.z = -Math.sqrt(3) * 2;
-    tiles[19].position.x = 2;
-    return tiles
+    return tiles;
+}
+
+function createPieces(color, offsetZ) {
+  const pieces = [];
+  for (let i = 0; i < 5; i++) { 
+    const settlement = createSettlement(color);
+    settlement.position.y = 1;
+    settlement.position.x = (i % 2)  ? (i + 1) / 4 : - i / 4;
+    settlement.position.z = offsetZ;
+    pieces.push(settlement)
+    };
+  const roads = [];
+  for (let i = 0; i < 5; i++) { 
+    const road = createRoad(color);
+    road.position.y = 1;
+    road.position.x = (i % 2)  ? (i + 1) / 4 : - i / 4;
+    road.position.z = 1 + offsetZ;
+    pieces.push(road) 
+  };
+  const group = new THREE.Group();
+  pieces.forEach(p => group.add(p))
+  return group;
+}
+
+function createCardStack(resource, number) {
+  const group = new THREE.Group();
+  for (let i = 0; i < number; i++) {
+    const card = createCard(resource);
+    card.position.y = i * 0.1;
+    group.add(card);
+  }
+  return group;
+}
+
+function createResourceCardStacks() {
+  const cardOrder = ["wheat", "ore", "brick", "sheep", "wood", "dev_back" ]
+  const cards = [
+    ...cardOrder.map(resource => createCardStack(resource, 10)),
+    ...cardOrder.map(resource => createCardStack(resource, 9))
+  ];
+  const cardsGroup = new THREE.Group();
+  cards.forEach(c => cardsGroup.add(c));
+  return cardsGroup;
 }
 
 export default class SeedScene extends THREE.Group {
   constructor() {
     super();
-    
-    const land = new Land();
 
-    const tiles = createTiles();
-
-    const settlement = createSettlement();
-    settlement.position.y = 1;
-
-     // const flower = new Flower();
-    const lights = new BasicLights();
+    const boardCenterNormal = new Vector3(0, 1, 0);
+    const boardCenter = new THREE.Vector3(0, 0, 0);
 
     var size = 10;
     var divisions = 10;
+    
+    const tiles = createTiles();
+
+    const orangePieces = createPieces("orange", 0);
+    const bluePieces = createPieces("blue", 0);
+    const redPieces = createPieces("red", 0);
+    const whitePieces = createPieces("white", 0);
+
+
+    const pieces = new THREE.Group();
+    [orangePieces, bluePieces, redPieces, whitePieces].forEach(
+      (colorSet, i) => {
+        colorSet.children.forEach(
+          piece => {
+            piece.position.z = piece.position.z - size * 0.6;
+            rotateAboutPoint(piece, boardCenter, boardCenterNormal, i * (Math.PI / 2), true);
+          }
+        );
+        pieces.add(colorSet);
+      }
+    )
+    
+    const resourceCardStacks = createResourceCardStacks();
+
+    resourceCardStacks.children.forEach((c, i, all) => {
+      // c.position.x = (- size / 2) + (i * (size /( all.length - 1)));
+      c.position.z = (- size / 2) - 2;
+      rotateAboutPoint(c, boardCenter, boardCenterNormal, i * (Math.PI / 6), true);
+    });
+ 
+     // const flower = new Flower();
+    const lights = new BasicLights();
 
     var gridHelper = new THREE.GridHelper( size, divisions );
 
     setTimeout(
       () => {
-        setDragControls(settlement);
+        setDragControls([pieces, resourceCardStacks]);
       }, 
       1000
     );
@@ -181,7 +228,8 @@ export default class SeedScene extends THREE.Group {
 
     this.add(
       ...tiles,
-      settlement,
+      pieces,
+      resourceCardStacks,
       lights,
       gridHelper
     );
