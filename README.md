@@ -6,6 +6,8 @@ Tired of playing board games online that lack the *fun* of physical pieces?
 
 Introducing... another shitty online katan (plz don't sue me)!
 
+![Game screenshot](README_assets/demo.png "Title")
+
 ## Getting Started
 
 ### install
