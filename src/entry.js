@@ -134,21 +134,13 @@ function onMouseMove( event ) {
   plane = new Plane(planeNormal, 0);
 
   raycaster.setFromCamera(mouse, camera);
-  const intersectedObjects = raycaster.intersectObjects( scene.children, true );
 
-  let intersectedObject = null;
-  const [first, second] = intersectedObjects;
-  // ensure intersection isn't the selected object. Use the second intersection if it is.
-  if (first) {
-    intersectedObject =  
-    (!selectedObject || first.object.uuid !== selectedObject.uuid)
-      ? first 
-      : second;
-  }
-
-  if (!intersectedObject) {
-    raycaster.ray.intersectPlane(plane, intersection);
-  } else {
-    intersection = intersectedObject.point
-  }
+  // Get all intersection with mouse ray, use the first intersection not part of the 
+  // selected object
+  const currentSelectedObjectUuid = selectedObject ? selectedObject.uuid : null;
+  const [newIntersection] = raycaster.intersectObjects(scene.children.filter(({uuid}) => uuid !== currentSelectedObjectUuid), true );
+ 
+  intersection = newIntersection 
+    ? newIntersection.point
+    : raycaster.ray.intersectPlane(plane); // we could do the assignment as the 'target' of intersectPlane
  }
