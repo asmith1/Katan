@@ -36,14 +36,14 @@ npm start
 
 - [ ] Control-Z functionality for unmoving a piece?
 - [ ] Dev Card assets
-- [ ] Fix tile assets from being skewed
-- [ ] Board initialization given a config / layout
+- [x] Fix tile assets from being skewed
+- [x] Board initialization given a config / layout
 - [ ] Tile numbers
 - [ ] Cities
 - [ ] Robber
 - [ ] Show if someone else is moving a piece?
 - [ ] Add player hand near avatar
 - [ ] Flipping dev cards? 
-- [ ] Harry's Sheep and other fun assets
+- [x] Harry's Sheep
 - [ ] Server (LOL that's like half the work) streaming location updates via socket
 - [ ] Add player avatar at camera location, looking in direction of mouse (requires server)
