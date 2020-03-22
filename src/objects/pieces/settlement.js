@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 
-export function createSettlement(color = "orange") {
-    var geometry = new THREE.Geometry();
+export default class Settlement extends THREE.Mesh {
+  constructor(color) {
+    const geometry = new THREE.Geometry();
     const SIDE_HEIGHT = 7 * 2; // origin on y axis
     const ROOF_ADD = 4 * 2;
 
@@ -64,7 +65,7 @@ export function createSettlement(color = "orange") {
     const scale = 0.015
     geometry.scale(scale, scale, scale)
 
-    var material = new THREE.MeshStandardMaterial({color});
-    var settlement = new THREE.Mesh( geometry, material );
-    return settlement;
+    const material = new THREE.MeshStandardMaterial({color});
+    super( geometry, material );
+  }
 }

@@ -28,7 +28,7 @@ camera.lookAt( scene.position );
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setClearColor(0x7ec0ee, 1);
 
-let theta = 0;
+let theta = Math.PI / 2;
 
 // render loop
 const onAnimationFrameHandler = (timeStamp) => {
@@ -138,7 +138,8 @@ function onMouseMove( event ) {
   // Get all intersection with mouse ray, use the first intersection not part of the 
   // selected object
   const currentSelectedObjectUuid = selectedObject ? selectedObject.uuid : null;
-  const [newIntersection] = raycaster.intersectObjects(scene.children.filter(({uuid}) => uuid !== currentSelectedObjectUuid), true );
+  const intersectionCandidateObjects = scene.children[0].children.filter(({uuid}) => uuid !== currentSelectedObjectUuid);
+  const [newIntersection] = raycaster.intersectObjects(intersectionCandidateObjects);
  
   intersection = newIntersection 
     ? newIntersection.point

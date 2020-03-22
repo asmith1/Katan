@@ -1,9 +1,9 @@
 import * as THREE from 'three';
   import BasicLights from './Lights.js';
 import {setDragControls} from '../entry.js';
-import {createSettlement} from "./pieces/settlement";
-import {createTile} from "./pieces/tile";
-import {createRoad} from "./pieces/road";
+import Settlement from "./pieces/settlement";
+import Tile from "./pieces/tile";
+import Road from "./pieces/road";
 import {createCard} from "./pieces/card";
 import { Vector3, Vector2 } from 'three';
 
@@ -48,32 +48,23 @@ function rotateAboutPoint(obj, point, axis, theta, pointIsWorld){
   obj.rotateOnAxis(axis, theta); // rotate the OBJECT
 }
 
-function createTiles() {
-  const tiles = [];
+const tileAmounts = {
+  "brick": 3,
+  "ore": 3,
+  "wheat": 4,
+  "sheep": 4,
+  "wood": 4,
+  "desert": 1
+}
+function createTiles(cards) {
+  const tiles = Object.entries(tileAmounts).reduce(
+    (accTiles, [resource, amount]) => {
+       for (let i = 0; i < amount; i++) {
+         accTiles.push(new Tile(resource))
+       }
+       return accTiles;
+    }, []);
 
-    for (let i = 0; i < 3; i++) {
-      tiles.push(createTile({resource: "brick", variant: i + 1}))
-    }
-
-    for (let i = 0; i < 3; i++) {
-      tiles.push(createTile({resource: "ore", variant: i + 1}))
-    }
-
-    for (let i = 0; i < 4; i++) {
-      tiles.push(createTile({resource: "wheat", variant: i + 1}))
-    }
-
-    for (let i = 0; i < 4; i++) {
-      tiles.push(createTile({resource: "wood", variant: i + 1}))
-    }
-
-    for (let i = 0; i < 4; i++) {
-      tiles.push(createTile({resource: "sheep", variant: i + 1}))
-    }
-
-    for (let i = 0; i < 1; i++) {
-      tiles.push(createTile({resource: "desert", variant: i + 1}))
-    }
 
     shuffle(tiles);
 
@@ -131,21 +122,21 @@ function createTiles() {
     return tiles;
 }
 
-function createPieces(color, offsetZ) {
+function createPieces(color) {
   const pieces = [];
   for (let i = 0; i < 5; i++) { 
-    const settlement = createSettlement(color);
+    const settlement = new Settlement(color);
     settlement.position.y = 1;
     settlement.position.x = (i % 2)  ? (i + 1) / 4 : - i / 4;
-    settlement.position.z = offsetZ;
+    settlement.position.z = 0;
     pieces.push(settlement)
     };
   const roads = [];
   for (let i = 0; i < 5; i++) { 
-    const road = createRoad(color);
+    const road = new Road(color);
     road.position.y = 1;
     road.position.x = (i % 2)  ? (i + 1) / 4 : - i / 4;
-    road.position.z = 1 + offsetZ;
+    road.position.z = 1 + 0;
     pieces.push(road) 
   };
   const group = new THREE.Group();
@@ -185,24 +176,18 @@ export default class SeedScene extends THREE.Group {
     var divisions = 10;
     
     const tiles = createTiles();
-
-    const orangePieces = createPieces("orange", 0);
-    const bluePieces = createPieces("blue", 0);
-    const redPieces = createPieces("red", 0);
-    const whitePieces = createPieces("white", 0);
-
-
-    const pieces = new THREE.Group();
-    [orangePieces, bluePieces, redPieces, whitePieces].forEach(
-      (colorSet, i) => {
+    const pieces = 
+      ["orange", "blue", "red", "white"]
+      .map(createPieces)
+      .reduce( (currentPieces, colorSet, i) => {
         colorSet.children.forEach(
           piece => {
             piece.position.z = piece.position.z - size * 0.6;
             rotateAboutPoint(piece, boardCenter, boardCenterNormal, i * (Math.PI / 2), true);
           }
         );
-        pieces.add(colorSet);
-      }
+        return [...currentPieces, ...colorSet.children]
+      }, []
     )
     
     const resourceCardStacks = createResourceCardStacks();
@@ -226,7 +211,7 @@ export default class SeedScene extends THREE.Group {
 
     setTimeout(
       () => {
-        setDragControls([pieces, resourceCardStacks]);
+        setDragControls([...pieces, resourceCardStacks]);
       }, 
       1000
     );
@@ -234,7 +219,7 @@ export default class SeedScene extends THREE.Group {
 
     this.add(
       ...tiles,
-      pieces,
+      ...pieces,
       resourceCardStacks,
       lights,
       // gridHelper
