@@ -8,7 +8,7 @@ const tile_side_texture = new THREE.TextureLoader().load(
 const material_side = new THREE.MeshBasicMaterial({ map: tile_side_texture });
 
 export default class ResourceTile extends THREE.Mesh {
-  constructor(resource = 'brick', size = 1) {
+  constructor(resource = 'brick') {
     const texture_top = new THREE.TextureLoader().load(
       `../../../assets/tiles/${resource}.png`
     );

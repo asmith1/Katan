@@ -18,15 +18,22 @@ import {
 } from 'three';
 import { DragControls } from 'three/examples/jsm/controls/DragControls.js';
 
-import SeedScene from './objects/Scene.js';
+import GameScene from './objects/GameScene.js';
+
+import genBoardSeed from './seeds/genBoardSeed';
 
 const scene = new Scene();
 const camera = new PerspectiveCamera();
 const renderer = new WebGLRenderer({ antialias: true });
-const seedScene = new SeedScene();
+
+const BOARD_RADIUS = 2;
+const gameScene = new GameScene({
+  boardSeed: genBoardSeed(BOARD_RADIUS),
+  boardRadius: BOARD_RADIUS,
+});
 
 // scene
-scene.add(seedScene);
+scene.add(gameScene);
 
 // camera
 camera.position.set(9, 15, 9);
@@ -46,7 +53,7 @@ const onAnimationFrameHandler = (timeStamp) => {
   camera.lookAt(scene.position);
 
   renderer.render(scene, camera);
-  seedScene.update && seedScene.update(timeStamp);
+  gameScene.update && gameScene.update(timeStamp);
   window.requestAnimationFrame(onAnimationFrameHandler);
 };
 window.requestAnimationFrame(onAnimationFrameHandler);
@@ -113,6 +120,8 @@ export const setDragControls = (objects) => {
     selectedObject = event.object;
   });
 
+  // Make dragged objects visually lighter
+  // TODO: glow as color of player
   controls.addEventListener('dragend', function (event) {
     if (event.object.material.emissive) {
       event.object.material.emissive.set(0x000000);

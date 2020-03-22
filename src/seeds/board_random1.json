@@ -1,0 +1,26 @@
+{
+  "tiles": {
+    "q:0,r:0": { "resource": "sheep", "meta": null },
+    "q:-1,r:1": { "resource": "sheep", "meta": null },
+    "q:0,r:1": { "resource": "wood", "meta": null },
+    "q:1,r:0": { "resource": "brick", "meta": null },
+    "q:1,r:-1": { "resource": "ore", "meta": null },
+    "q:0,r:-1": { "resource": "brick", "meta": null },
+    "q:-1,r:0": { "resource": "wood", "meta": null },
+    "q:-2,r:2": { "resource": "brick", "meta": null },
+    "q:-1,r:2": { "resource": "wheat", "meta": null },
+    "q:0,r:2": { "resource": "sheep", "meta": null },
+    "q:1,r:1": { "resource": "wheat", "meta": null },
+    "q:2,r:0": { "resource": "wheat", "meta": null },
+    "q:2,r:-1": { "resource": "ore", "meta": null },
+    "q:2,r:-2": { "resource": "ore", "meta": null },
+    "q:1,r:-2": { "resource": "sheep", "meta": null },
+    "q:0,r:-2": { "resource": "wood", "meta": null },
+    "q:-1,r:-1": { "resource": "desert", "meta": null },
+    "q:-2,r:0": { "resource": "wood", "meta": null },
+    "q:-2,r:1": { "resource": "wheat", "meta": null }
+  },
+  "radius": 2,
+  "isRandom": true,
+  "isBlank": false
+}

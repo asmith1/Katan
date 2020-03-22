@@ -51,8 +51,8 @@ function createResourceCardStacks() {
   return cardsGroup;
 }
 
-export default class SeedScene extends THREE.Group {
-  constructor() {
+export default class GameScene extends THREE.Group {
+  constructor({ boardSeed }) {
     super();
 
     const boardCenterNormal = new Vector3(0, 1, 0);
@@ -97,7 +97,7 @@ export default class SeedScene extends THREE.Group {
     );
 
     const lights = new BasicLights();
-    const board = new Board();
+    const board = new Board(boardSeed);
 
     // var gridHelper = new THREE.GridHelper(size, divisions);
 
