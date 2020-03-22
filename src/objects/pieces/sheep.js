@@ -13,7 +13,7 @@ export default class Sheep extends THREE.Object3D {
             (gltf) => {
                 this.add(gltf.scene.children[0])
             },
-            console.log,
+            null,
             console.error
         );
     }
