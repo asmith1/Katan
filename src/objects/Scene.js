@@ -192,26 +192,26 @@ export default class SeedScene extends THREE.Group {
     
     const resourceCardStacks = createResourceCardStacks();
 
-    resourceCardStacks.children.forEach(
-      (stack, i, all) => {
+   const resourceCards =  resourceCardStacks.children.reduce(
+      (accCards, stack, i) => {
         stack.children.forEach(
           c => {
-            // c.position.x = (- size / 2) + (i * (size /( all.length - 1)));
-            c.position.z = (- size / 2) - 2;
+             c.position.z = (- size / 2) - 2;
             rotateAboutPoint(c, boardCenter, boardCenterNormal, i * (Math.PI / 6), true);
           }
-        )
-      }
+        );
+        return [...accCards, ...stack.children];
+      },
+      []
     );
  
-     // const flower = new Flower();
     const lights = new BasicLights();
 
     var gridHelper = new THREE.GridHelper( size, divisions );
 
     setTimeout(
       () => {
-        setDragControls([...pieces, resourceCardStacks]);
+        setDragControls([...pieces, ...resourceCards]);
       }, 
       1000
     );
@@ -220,7 +220,7 @@ export default class SeedScene extends THREE.Group {
     this.add(
       ...tiles,
       ...pieces,
-      resourceCardStacks,
+      ...resourceCards,
       lights,
       // gridHelper
     );
