@@ -15,6 +15,7 @@ import {
   Raycaster,
   Vector2,
   Plane,
+  Clock,
 } from 'three';
 import { DragControls } from 'three/examples/jsm/controls/DragControls.js';
 
@@ -46,14 +47,17 @@ renderer.setClearColor(0x7ec0ee, 1);
 let theta = Math.PI / 2;
 
 // render loop
-const onAnimationFrameHandler = (timeStamp) => {
+let time = 0;
+const clock = new Clock();
+const onAnimationFrameHandler = () => {
+  time += clock.getDelta();
   camera.position.x = 9 * Math.cos(theta);
   camera.position.y = 10;
   camera.position.z = 9 * Math.sin(theta);
   camera.lookAt(scene.position);
 
   renderer.render(scene, camera);
-  gameScene.update && gameScene.update(timeStamp);
+  gameScene.update && gameScene.update(time);
   window.requestAnimationFrame(onAnimationFrameHandler);
 };
 window.requestAnimationFrame(onAnimationFrameHandler);

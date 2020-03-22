@@ -114,7 +114,11 @@ export default class GameScene extends THREE.Group {
     );
   }
 
-  update(/* timeStamp */) {
-    // this.rotation.y = timeStamp / 10000;
+  update(time) {
+    this.children.forEach((c) => {
+      if (c.update) {
+        c.update(time);
+      }
+    });
   }
 }

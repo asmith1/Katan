@@ -7,27 +7,26 @@ const tile_side_texture = new THREE.TextureLoader().load(
 );
 const material_side = new THREE.MeshBasicMaterial({ map: tile_side_texture });
 
-export default class ResourceTile extends THREE.Mesh {
-  constructor(resource = 'brick') {
+export default class HexTile extends THREE.Mesh {
+  constructor(type = 'brick', size, randomRotation) {
     const texture_top = new THREE.TextureLoader().load(
-      `../../../assets/tiles/${resource}.png`
+      `../../../assets/tiles/${type}.png`
     );
 
-    // randomly rotate
-    texture_top.rotation = (Math.PI / 3) * Math.floor(Math.random() * 6);
-    texture_top.center = new THREE.Vector2(0.5, 0.5);
+    if (randomRotation) {
+      texture_top.rotation = (Math.PI / 3) * Math.floor(Math.random() * 6);
+      texture_top.center = new THREE.Vector2(0.5, 0.5);
+    }
 
-    const material_top = new THREE.MeshBasicMaterial({ map: texture_top });
+    const material_top = new THREE.MeshStandardMaterial({ map: texture_top });
 
     const material = new THREE.MeshFaceMaterial([material_top, material_side]);
-
-    const width = 1;
 
     const thickness = 0.2;
     const num_sides = 6;
     const geometry = new THREE.CylinderGeometry(
-      width,
-      width,
+      size,
+      size,
       thickness,
       num_sides
     );
@@ -40,7 +39,7 @@ export default class ResourceTile extends THREE.Mesh {
 
     super(geometry, material);
 
-    if (resource === 'sheep') {
+    if (type === 'sheep') {
       const numSheep = Math.ceil(Math.random() * 3);
       for (let i = 0; i < numSheep; i++) {
         const sheep = new Sheep();

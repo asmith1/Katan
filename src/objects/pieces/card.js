@@ -6,7 +6,7 @@ export default class Card extends THREE.Mesh {
       const texture = new THREE.TextureLoader().load(
         `../../../assets/cards/${type}_card.png`
       );
-      material = new THREE.MeshBasicMaterial({ map: texture });
+      material = new THREE.MeshStandardMaterial({ map: texture });
     } else {
       material = new THREE.MeshStandardMaterial({ color: 'purple' });
     }
