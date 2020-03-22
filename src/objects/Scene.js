@@ -2,88 +2,11 @@ import * as THREE from 'three';
 import BasicLights from './Lights.js';
 import { setDragControls } from '../entry.js';
 import Settlement from './pieces/settlement';
-import Tile from './pieces/tile';
 import Road from './pieces/road';
 import Card from './pieces/card';
 import { Vector3 } from 'three';
 import rotateAboutPoint from '../util/rotateAroundPoint.js';
-import shuffleArray from '../util/shuffleArray.js';
-
-const tileAmounts = {
-  brick: 3,
-  ore: 3,
-  wheat: 4,
-  sheep: 4,
-  wood: 4,
-  desert: 1,
-};
-
-function createTiles() {
-  const tiles = Object.entries(tileAmounts).reduce(
-    (accTiles, [resource, amount]) => {
-      for (let i = 0; i < amount; i++) {
-        accTiles.push(new Tile(resource));
-      }
-      return accTiles;
-    },
-    []
-  );
-
-  shuffleArray(tiles);
-
-  tiles[1].position.x = 2;
-  tiles[2].position.x = -2;
-  tiles[3].position.x = 4;
-  tiles[4].position.x = -4;
-
-  // 2nd from bottom
-  tiles[5].position.z = Math.sqrt(3);
-  tiles[5].position.x = 1;
-
-  tiles[6].position.z = Math.sqrt(3);
-  tiles[6].position.x = 3;
-
-  tiles[7].position.z = Math.sqrt(3);
-  tiles[7].position.x = -1;
-
-  tiles[8].position.z = Math.sqrt(3);
-  tiles[8].position.x = -3;
-
-  // 2nd from top
-  tiles[9].position.z = -Math.sqrt(3);
-  tiles[9].position.x = 1;
-
-  tiles[10].position.z = -Math.sqrt(3);
-  tiles[10].position.x = 3;
-
-  tiles[11].position.z = -Math.sqrt(3);
-  tiles[11].position.x = -1;
-
-  tiles[12].position.z = -Math.sqrt(3);
-  tiles[12].position.x = -3;
-
-  // bottom
-  tiles[13].position.z = Math.sqrt(3) * 2;
-  tiles[13].position.x = 0;
-
-  tiles[14].position.z = Math.sqrt(3) * 2;
-  tiles[14].position.x = -2;
-
-  tiles[15].position.z = Math.sqrt(3) * 2;
-  tiles[15].position.x = 2;
-
-  // Top
-  tiles[16].position.z = -Math.sqrt(3) * 2;
-  tiles[16].position.x = 0;
-
-  tiles[17].position.z = -Math.sqrt(3) * 2;
-  tiles[17].position.x = -2;
-
-  tiles[18].position.z = -Math.sqrt(3) * 2;
-  tiles[18].position.x = 2;
-
-  return tiles;
-}
+import Board from './pieces/board/index.js';
 
 function createPieces(color) {
   const pieces = [];
@@ -138,7 +61,6 @@ export default class SeedScene extends THREE.Group {
     var size = 10;
     // var divisions = 10;
 
-    const tiles = createTiles();
     const pieces = ['orange', 'blue', 'red', 'white']
       .map(createPieces)
       .reduce((currentPieces, colorSet, i) => {
@@ -175,6 +97,7 @@ export default class SeedScene extends THREE.Group {
     );
 
     const lights = new BasicLights();
+    const board = new Board();
 
     // var gridHelper = new THREE.GridHelper(size, divisions);
 
@@ -183,7 +106,7 @@ export default class SeedScene extends THREE.Group {
     }, 1000);
 
     this.add(
-      ...tiles,
+      board,
       ...pieces,
       ...resourceCards,
       lights

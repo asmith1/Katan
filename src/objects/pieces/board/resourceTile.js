@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import Sheep from './sheep';
+import Sheep from '../sheep';
 
 // same for all tiles, do once
 const tile_side_texture = new THREE.TextureLoader().load(
@@ -7,7 +7,7 @@ const tile_side_texture = new THREE.TextureLoader().load(
 );
 const material_side = new THREE.MeshBasicMaterial({ map: tile_side_texture });
 
-export default class Tile extends THREE.Mesh {
+export default class ResourceTile extends THREE.Mesh {
   constructor(resource) {
     const texture_top = new THREE.TextureLoader().load(
       `../../../assets/tiles/${resource}.png`
