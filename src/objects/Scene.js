@@ -4,7 +4,7 @@ import {setDragControls} from '../entry.js';
 import Settlement from "./pieces/settlement";
 import Tile from "./pieces/tile";
 import Road from "./pieces/road";
-import {createCard} from "./pieces/card";
+import Card from "./pieces/card";
 import { Vector3, Vector2 } from 'three';
 
 function randomColor() {
@@ -147,7 +147,7 @@ function createPieces(color) {
 function createCardStack(resource, number) {
   const group = new THREE.Group();
   for (let i = 0; i < number; i++) {
-    const card = createCard(resource);
+    const card = new Card(resource);
     card.position.y = i * 0.1;
     group.add(card);
   }
