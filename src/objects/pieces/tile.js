@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import Sheep from './sheep';
+import { Vector3 } from 'three';
 
 // same for all tiles, do once
 const tile_side_texture =  new THREE.TextureLoader().load(`../../../assets/tiles/tile_side.png`);
@@ -27,5 +29,26 @@ export default class Tile extends THREE.Mesh {
          })
     
          super(geometry, material);
+         
+         if (resource === 'sheep') {
+             const numSheep = Math.ceil(Math.random() * 3);
+             for (let i = 0; i < numSheep; i++) {
+                const sheep = new Sheep();
+                const scale = 0.1
+                sheep.scale.set(
+                    scale,
+                    scale,
+                    scale
+                );
+                const randomVector = new THREE.Vector2(-1 + 2 * Math.random(), -1 + 2 * Math.random());
+                randomVector.normalize();
+                randomVector.multiplyScalar(Math.random() * 0.8);
+                sheep.position.x = sheep.position.x + randomVector.x;
+                sheep.position.z = sheep.position.z + randomVector.y;
+                sheep.rotateY(Math.floor(Math.random() * 6));
+
+                this.add(sheep);
+             }
+         }
     }
 }
