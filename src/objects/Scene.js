@@ -6,47 +6,8 @@ import Tile from './pieces/tile';
 import Road from './pieces/road';
 import Card from './pieces/card';
 import { Vector3 } from 'three';
-
-// function randomColor() {
-//   const color = new THREE.Color(0xffffff);
-//   color.setHex(Math.random() * 0xffffff);
-//   return color;
-// }
-
-/**
- * Shuffles array in place. ES6 version
- * @param {Array} a items An array containing the items.
- */
-function shuffle(a) {
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-// obj - your object (THREE.Object3D or derived)
-// point - the point of rotation (THREE.Vector3)
-// axis - the axis of rotation (normalized THREE.Vector3)
-// theta - radian value of rotation
-// pointIsWorld - boolean indicating the point is in world coordinates (default = false)
-function rotateAboutPoint(obj, point, axis, theta, pointIsWorld) {
-  pointIsWorld = pointIsWorld === undefined ? false : pointIsWorld;
-
-  if (pointIsWorld) {
-    obj.parent.localToWorld(obj.position); // compensate for world coordinate
-  }
-
-  obj.position.sub(point); // remove the offset
-  obj.position.applyAxisAngle(axis, theta); // rotate the POSITION
-  obj.position.add(point); // re-add the offset
-
-  if (pointIsWorld) {
-    obj.parent.worldToLocal(obj.position); // undo world coordinates compensation
-  }
-
-  obj.rotateOnAxis(axis, theta); // rotate the OBJECT
-}
+import rotateAboutPoint from '../util/rotateAroundPoint.js';
+import shuffleArray from '../util/shuffleArray.js';
 
 const tileAmounts = {
   brick: 3,
@@ -56,6 +17,7 @@ const tileAmounts = {
   wood: 4,
   desert: 1,
 };
+
 function createTiles() {
   const tiles = Object.entries(tileAmounts).reduce(
     (accTiles, [resource, amount]) => {
@@ -67,7 +29,7 @@ function createTiles() {
     []
   );
 
-  shuffle(tiles);
+  shuffleArray(tiles);
 
   tiles[1].position.x = 2;
   tiles[2].position.x = -2;
