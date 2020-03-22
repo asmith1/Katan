@@ -2,11 +2,11 @@
 
 Stuck inside because of global pandemics?
 Can't visit your friends to play board games?
-Tired of playing board games online that lack the *fun* of physical pieces?
+Tired of playing board games online that lack the _fun_ of physical pieces?
 
 Introducing... another shitty online katan (plz don't sue me)!
 
-![Game screenshot](README_assets/demo.png "Gameboard Screenshot")
+![Game screenshot](README_assets/demo_feb22.png 'Gameboard Screenshot')
 
 ## Getting Started
 
@@ -43,7 +43,7 @@ npm start
 - [ ] Robber
 - [ ] Show if someone else is moving a piece?
 - [ ] Add player hand near avatar
-- [ ] Flipping dev cards? 
+- [ ] Flipping dev cards?
 - [x] Harry's Sheep
 - [ ] Server (LOL that's like half the work) streaming location updates via socket
 - [ ] Add player avatar at camera location, looking in direction of mouse (requires server)
