@@ -11,7 +11,7 @@ const tileAmounts = {
   desert: 1,
 };
 
-function createTiles() {
+function createTilesOld() {
   const tiles = Object.entries(tileAmounts).reduce(
     (accTiles, [resource, amount]) => {
       for (let i = 0; i < amount; i++) {
@@ -78,10 +78,32 @@ function createTiles() {
   return tiles;
 }
 
+// represented in cube coordinates,
+// https://www.redblobgames.com/grids/hexagons/
+// with respect to the center of the grid
 export default class Board extends THREE.Group {
   constructor() {
     super();
-    const tiles = createTiles();
-    this.add(...tiles);
+
+    const tilesFromCenter = 2;
+
+    this.tiles = new Map();
+
+    for (let x = -tilesFromCenter; x <= tilesFromCenter; x++) {
+      for (let y = -tilesFromCenter; y <= tilesFromCenter; y++) {
+        for (let z = -tilesFromCenter; z <= tilesFromCenter; z++) {
+          if (Math.abs(x) + Math.abs(y) + Math.abs(z) > 4) {
+            continue;
+          } // enforce hex
+          const key = `x:${x},y:${y},z:${z}`;
+          const tile = new ResourceTile();
+          tile.position.x = 0;
+
+          this.tiles.set(key, tile);
+        }
+      }
+    }
+
+    this.tiles.forEach((tile) => this.add(tile));
   }
 }

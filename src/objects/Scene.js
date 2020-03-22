@@ -106,7 +106,7 @@ export default class SeedScene extends THREE.Group {
     }, 1000);
 
     this.add(
-      board,
+      ...board.children, // for intersection points we want to spread this.
       ...pieces,
       ...resourceCards,
       lights

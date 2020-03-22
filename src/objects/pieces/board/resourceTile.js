@@ -8,7 +8,7 @@ const tile_side_texture = new THREE.TextureLoader().load(
 const material_side = new THREE.MeshBasicMaterial({ map: tile_side_texture });
 
 export default class ResourceTile extends THREE.Mesh {
-  constructor(resource) {
+  constructor(resource = 'brick', size = 1) {
     const texture_top = new THREE.TextureLoader().load(
       `../../../assets/tiles/${resource}.png`
     );
@@ -21,13 +21,14 @@ export default class ResourceTile extends THREE.Mesh {
 
     const material = new THREE.MeshFaceMaterial([material_top, material_side]);
 
-    const width = 1.125;
-    const height = 0.2;
+    const width = 1;
+
+    const thickness = 0.2;
     const num_sides = 6;
     const geometry = new THREE.CylinderGeometry(
       width,
       width,
-      height,
+      thickness,
       num_sides
     );
     geometry.faces.forEach((face, i) => {
