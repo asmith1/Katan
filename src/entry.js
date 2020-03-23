@@ -20,6 +20,8 @@ import { DragControls } from 'three/examples/jsm/controls/DragControls.js';
 
 import GameScene from './objects/GameScene.js';
 
+import Card from './objects/pieces/card.js';
+
 import genBoardSeed from './seeds/genBoardSeed';
 
 const scene = new Scene();
@@ -82,7 +84,7 @@ function onDocumentKeyDown(event) {
     theta = theta + rotationIncrement;
   }
 
-  // d
+  // right / d
   if (keyCode === 39 || keyCode === 68) {
     theta = theta - rotationIncrement;
   }
@@ -90,14 +92,21 @@ function onDocumentKeyDown(event) {
   // q
   if (keyCode === 81) {
     if (selectedObject) {
-      selectedObject.rotateY(-0.1);
+      selectedObject.rotateY(+0.1);
     }
   }
 
   // e
   if (keyCode === 69) {
     if (selectedObject) {
-      selectedObject.rotateY(+0.1);
+      selectedObject.rotateY(-0.1);
+    }
+  }
+
+  // spacebar flips the card over
+  if(keyCode === 32) {
+    if (selectedObject instanceof Card) {
+      selectedObject.rotateZ(Math.PI);
     }
   }
 }
