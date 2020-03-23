@@ -104,7 +104,7 @@ function onDocumentKeyDown(event) {
   }
 
   // spacebar flips the card over
-  if(keyCode === 32) {
+  if (keyCode === 32) {
     if (selectedObject instanceof Card) {
       selectedObject.rotateZ(Math.PI);
     }
